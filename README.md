@@ -1,5 +1,7 @@
 # clinical-agent-skills
 
+![lint](https://github.com/MichaelRDionne/clinical-agent-skills/actions/workflows/lint.yml/badge.svg)
+
 Battle-tested Claude Code **skills and slash commands** from a real clinical-automation practice — the governance, safety-gate, and workflow patterns that keep LLM agents useful *and* contained when the data is protected health information and the stakes are legal medical records.
 
 Everything here is **pseudonymized from a live production setup** run by a clinician-developer (me): real incidents, real red-team findings, real standing orders — with every identifying noun genericized (the EHR vendor is "a cloud-based EHR," the employer is "the clinic," tools carry generic names). The engineering substance is intact; the identities are not. Fork it, gut it, adapt it.
@@ -48,6 +50,12 @@ They're standard [Claude Code](https://claude.com/claude-code) skill/command for
 
 - **Commands:** copy into your project's `.claude/commands/` → invoke as `/name`.
 - **Skills:** copy the folder into `.claude/skills/` → Claude loads them by description match or via the Skill tool.
+
+Both formats key off YAML frontmatter (a skill's `name` must match its parent
+directory, and every file needs a non-empty `description` — that's what
+Claude matches against). `python3 scripts/lint_frontmatter.py` checks this;
+CI runs it on every push so a broken frontmatter block fails loud instead of
+just silently never loading.
 
 But **read them as patterns first.** Paths, folder names, and scanner scripts are placeholders for your own; the *shape* — gates with incidents, blocking scans, human sign-off exactly where history gets written — is the part to keep. The prose says "clinician/EHR/PHI" because that's where this was forged; the same structures apply to any agent workflow touching regulated data, production systems, or anything irreversible.
 
