@@ -2,21 +2,25 @@
 
 ![lint](https://github.com/MichaelRDionne/clinical-agent-skills/actions/workflows/lint.yml/badge.svg)
 
-Battle-tested Claude Code **skills and slash commands** from a real clinical-automation practice — the governance, safety-gate, and workflow patterns that keep LLM agents useful *and* contained when the data is protected health information and the stakes are legal medical records.
+This is the rulebook I run AI agents under in a real medical practice.
 
-Everything here is **pseudonymized from a live production setup** run by a clinician-developer (me): real incidents, real red-team findings, real standing orders — with every identifying noun genericized (the EHR vendor is "a cloud-based EHR," the employer is "the clinic," tools carry generic names). The engineering substance is intact; the identities are not. Fork it, gut it, adapt it.
+I'm a clinician who automates his own clinical workflow with Claude Code agents. The data those agents touch is protected health information; the documents they help produce are legal medical records. That combination forces a discipline most published agent configs never need: hard rules about what an agent may do on its own, what it must report, and what it must never touch — and a way to make those rules stick across sessions.
+
+Everything here is **pseudonymized from that live setup**. Real incidents, real red-team findings, real standing orders — with every identifying noun genericized (the EHR vendor is "a cloud-based EHR," the employer is "the clinic," tools carry generic names). The engineering substance is intact; the identities are not. Fork it, gut it, adapt it.
 
 ## Why this exists
 
-Most published agent configs are demos. These are the opposite: every hard gate in this repo was **paid for with a real incident** — a capture pipeline that reported `PASS` twice on 14 copies of a marketing page, a saved-source format that turned out to be worthless when 17 of 18 archived URLs died, an agent that silently drove the operator's live browser mid-patient-visit. The rules carry their origin stories, because a rule with its incident survives "surely this doesn't apply here" and a bare rule doesn't.
+Most published agent configs are demos. These are the opposite: every hard gate in this repo was **paid for with a real incident**. A capture pipeline reported `PASS` twice on 14 copies of a marketing page. A saved-source format turned out to be worthless when 17 of 18 archived URLs died. An agent silently drove the operator's live browser mid-patient-visit.
 
-## The five load-bearing ideas
+The rules carry their origin stories on purpose. A rule paired with its incident survives the moment someone thinks "surely this doesn't apply here." A bare rule doesn't.
+
+## The five core ideas
 
 These recur across every file and are the actual transferable IP:
 
 1. **Gate ⇄ incident documentation.** Every non-negotiable rule is paired with the failure that created it. See `skills/clinical-change-control` — the format is the product.
-2. **Mechanics-green ≠ content-correct — open the payload.** A green exit code, a passing manifest, even a passing red-team review are *necessary, never sufficient*. The only test that catches a silent content failure is opening the artifact and reading it.
-3. **GREEN / YELLOW / RED autonomy + the no-daemon fence.** Agents act freely on read/verify/draft, act-and-report on reversible writes, and stop for a human on anything irreversible or outbound — and nothing runs unless a human session is running.
+2. **A green check is not a correct result — open the payload.** A green exit code, a passing manifest, even a passing red-team review are necessary and never sufficient. The only test that catches a silent content failure is opening the artifact and reading it.
+3. **GREEN / YELLOW / RED autonomy + the no-daemon fence.** Agents act freely on read/verify/draft, act-and-report on reversible writes, and stop for a human on anything irreversible or outbound. Nothing runs unless a human session is running.
 4. **De-identified reporting boundaries.** Agents that touch protected data report **counts, status buckets, and folder paths** — never the content. The data has a closed circuit; the conversation is outside it.
 5. **Verify live, not cached.** Portals lie, cached fetches lie, prior-session notes lie, and "the push succeeded" is not "the served content is right." Every claim about live state gets re-checked against the live surface before it's acted on.
 
