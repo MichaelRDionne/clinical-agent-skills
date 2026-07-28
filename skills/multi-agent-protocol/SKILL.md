@@ -3,11 +3,11 @@ name: multi-agent-protocol
 description: >
   How multiple AI agents coexist safely in one shared working directory — the tier model,
   the GREEN/YELLOW/RED autonomy protocol, the file-based handoff channel, and the
-  one-agent-at-a-time concurrency rule. Load whenever you: coordinate with a peer agent;
+  write-defensively concurrency doctrine. Load whenever you: coordinate with a peer agent;
   write or read a handoff; need to classify an action as autonomous (GREEN), do-and-report
   (YELLOW), or stop-for-the-operator (RED); pick a browser surface for protected-data vs
   public-web work; decide which tier you are (peer author vs inbox quarantine); or are
-  tempted to run two agents at once or install a daemon/watcher.
+  tempted to install a daemon/watcher.
 ---
 
 # multi-agent-protocol
@@ -91,9 +91,18 @@ The `/to-peer` and `/from-peer` commands in this repo implement both directions,
 
 ---
 
-## 4. Concurrency — ONE peer agent at a time
+## 4. Concurrency — normal operating mode; write defensively
 
-- **One peer agent at a time.** Multiple agents writing directly to a cloud-synced directory can clobber each other or spawn sync-conflict files. **Hand off rather than running both at once.**
+The original rule here was "ONE peer agent at a time." It was rewritten after measurement: in one week, 84 sessions wrote to the shared directory, and the task register alone was edited by 62 of them. The rule was unfollowed, unobservable (no agent can see the others), and aimed at the wrong failure mode — cloud-sync conflict files, when the real risk is same-filesystem last-write-wins, which leaves no artifact at all. The replacement doctrine: assume concurrency, write defensively.
+
+- **Serialize only when scope overlaps.** Two agents on the same document or workstream is a real conflict — finish or hand off one. Different areas of the directory run concurrently.
+- **Edit, never shell rewrites.** An exact-match edit tool is the only compare-and-swap protecting shared markdown; `sed -i`, `>`, `tee`, and full-file writes bypass it silently. (The same week's measurement found 43 such shell mutations.)
+- **"File modified on disk" is a signal, not noise** — re-read before proceeding.
+- **Atomic claim scripts for shared scalars** (session numbers, counters). Never compute-then-write across a gap — least of all across a human review gate, where minutes can pass between the read and the write.
+- **Foreign-owned state is not yours to close out.** If a record carries another session's owner ID, repair a hard breakage if you must — but say so in your own entry rather than silently closing theirs.
+- **Re-fetch before any external-repo push** — assume a parallel session has already pushed (see the portfolio-safety-check skill's Step 0).
+- **A sync-conflict copy of a shared file is still a P0.** Defensive writing reduces conflicts; it doesn't make them ignorable.
+- **Detection is deliberately absent.** Watchers and persistent autonomy are RED (§2). Every check above is synchronous, run at write time, never a daemon. Keep it that way.
 - Launch each agent from the directory root so it auto-loads its entry-point file.
 - Never interrupt the operator's active screen or browser tab; browser automation runs on a separate, dedicated surface (§6).
 
