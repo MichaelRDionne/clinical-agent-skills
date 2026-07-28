@@ -34,7 +34,7 @@ These recur across every file and are the actual transferable IP:
 | [`clinical-change-control`](skills/clinical-change-control/SKILL.md) | The 12 hard gates of a PHI-touching EHR-automation pipeline, each with its incident: mount sentinels, attested browser surfaces, payload-reality checks, identity quotes, archive-only cleanup. |
 | [`multi-agent-protocol`](skills/multi-agent-protocol/SKILL.md) | How multiple agents share one working directory safely: tier model, GREEN/YELLOW/RED, the async file-based handoff channel, one-agent-at-a-time, browser-surface boundaries. |
 | [`debugging-playbook`](skills/debugging-playbook/SKILL.md) | Symptom → meaning → **discriminating test** → action, one row per incident-backed failure mode. Includes the "dismissed side-signal = canary" rule. |
-| [`portfolio-safety-check`](skills/portfolio-safety-check/SKILL.md) | Pre-publish audit for a professional's public GitHub: the employer/vendor/colleague layer that generic secrets scanners miss, git-history leak checks, and the flip-private → genericize → verify-live remediation pattern. (This repo passed its own check before publishing.) |
+| [`portfolio-safety-check`](skills/portfolio-safety-check/SKILL.md) | Pre-publish audit for a professional's public GitHub: the employer/vendor/colleague layer that generic secrets scanners miss, git-history leak checks, a claim-honesty pass (can you defend every README claim in an interview?), a stale-clone concurrency gate, and the flip-private → genericize → verify-live remediation pattern. (This repo passed its own check before publishing.) |
 
 ### Commands (`commands/*.md`)
 

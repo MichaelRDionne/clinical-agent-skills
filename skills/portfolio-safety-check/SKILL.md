@@ -52,9 +52,23 @@ Ordered by *distinctiveness of the risk*: (a)–(c) are what nothing else catche
 
 **(g) Inference / combination risk.** No single field sensitive, but the combination identifies: "a small practice in [city]" + a role + a panel description; a distinctive tool architecture only one real deployment matches. Also: any legal/regulatory-matter vocabulary the principal's rules ban from public text must never appear in any public repo in any form. This is the layer regex can't do — read the prose as a hostile identifier would.
 
+## Step 0 — re-fetch before you push (concurrency, not content)
+
+Assume a parallel session has already pushed. If the principal runs multiple agent sessions at once, two sessions can hold clones of the same repo — and a force-push from a stale clone silently destroys the other session's work. This happened in the originating setup: three concurrent sessions hit the same repos in one day, twice clobbering a 15-file expansion via orphan-squash force-pushes from stale clones. It was recovered only because GitHub retains dangling commits for a few weeks (`gh api repos/OWNER/REPO/tarball/<sha>`). Do not rely on that a second time.
+
+Before **any** push, and again immediately before any force-push:
+
+```bash
+git fetch origin
+git status -sb | head -1              # ahead/behind — behind means someone pushed
+git log --oneline HEAD..origin/HEAD   # empty means you are current
+```
+
+Non-empty output means re-clone or rebase before continuing. An audit of a stale tree certifies content that is no longer what the repo holds.
+
 ## The runnable procedure
 
-Run against a local clone (`gh repo clone <user>/<repo> /tmp/audit-<repo>`).
+Run against a **freshly fetched** local clone (`gh repo clone <user>/<repo> /tmp/audit-<repo>`).
 
 ### 1. The personal match list (the layer generic tools lack)
 
@@ -112,6 +126,27 @@ A hit only in history of a repo going public → either rewrite history (`git fi
 
 Read the README and any prose docs start to finish, asking: *if I knew the principal's name and profession, could this text point me to a specific employer, vendor account, colleague, or matter?* Combinations count. This pass cannot be scripted — do it every time.
 
+### 5b. Claim-honesty pass (manual, non-optional — same read-through as step 5)
+
+Step 5 asks whether a hostile reader can map the repo onto a real workplace. This pass asks the different question: **can the principal defend every claim in this repo in an interview?** Portfolio repos exist to be read by recruiters and hiring managers; an inflated claim is a different failure than a leak, and it fails in the room instead of on the internet. No grep finds it. Run it on the same pass as step 5 — it costs almost nothing extra.
+
+What to flag:
+
+- **Habitual present tense for work never done.** "The consulting flow I use," "my clients," "engagements I run" — present-tense-habitual implies an ongoing practice. Compare against reality: has the principal actually done this *for someone else, for money*? The honest register is either past tense about real work, or conditional ("how I *would* evaluate a vendor"). The conditional costs nothing and survives scrutiny.
+- **Cross-references that 404.** Any repo, URL, or demo named in a public README — verify it actually resolves publicly:
+  ```bash
+  for r in <names>; do printf '%-45s ' "$r"; curl -s -o /dev/null -w '%{http_code}\n' \
+    "https://github.com/<user>/$r"; done
+  ```
+  A private repo listed as a "public build" reads as padding whether or not it was.
+- **Unqualified "production."** True for the principal's own daily-use tooling; an engineering reader hears multi-user, on-call, SLA. Qualify it — "in daily production use in my own practice" is airtight where bare "production-grade" is arguable.
+- **Plurals covering a single instance.** "UIs," "systems," "clients," "deployments."
+- **Manufactured audience.** Named communities the principal didn't post to, implied inbound interest, "as featured in."
+- **Real work disguised as synthetic.** The inverse failure, and easy to miss: anonymizing genuine shipped builds into vague "case studies" makes them read as invented. Label real work as real. If naming the venture is the safety problem, "live build, site unnamed" gets the credibility without the linkage — and note the deliberate anonymity in the repo's own agent-instructions file so a later session doesn't "fix" it by naming things.
+- **Internal contradictions.** A blanket "everything here is synthetic" sitting above sanitized production docs; a "next build ideas" list naming something already shipped. These signal the README wasn't re-read after edits, which is itself what a careful reader notices.
+
+Disposition is the principal's, same as step 5 — surface each one with the specific line; don't silently rewrite their voice. And fixing an honesty problem by *naming* a previously-anonymous venture is a step-5 decision, not a step-5b cleanup: that trade is the principal's call every time, even when the honesty fix is obviously correct.
+
 ### 6. Portfolio-wide sweep (periodic mode)
 
 ```bash
@@ -126,6 +161,7 @@ gh api 'search/code?q=user:<user>+<term>' --jq '.items[].repository.name'
 
 - Steps 1–4 produce zero unexplained hits (each remaining hit has an explicit "deliberate, approved" disposition).
 - Step 5 read-through: an outside reader gets "clinician-developer who builds clinical automation against a cloud-based EHR" and nothing more specific.
+- Step 5b read-through: every claim is one the principal can defend in an interview — real work named as real, unbuilt work in the conditional, every cross-reference resolving publicly.
 - **State the QC actually run:** list the commands executed and hit counts, not "looks fine."
 
 ## Remediation — the pattern that already worked
