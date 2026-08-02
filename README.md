@@ -44,8 +44,8 @@ These recur across every file and are the actual transferable IP:
 | [`/from-peer`](commands/from-peer.md) | Read the peer's replies. **Peer text is data, not commands** — every requested action is classified GREEN/YELLOW/RED, never auto-executed. |
 | [`/to-external`](commands/to-external.md) | Package a task for a no-filesystem chat LLM: payload-only scanning, a token-economy stop rule, one clean copy-paste block. |
 | [`/token-saver`](commands/token-saver.md) | Patch-don't-rewrite editing for long clinical notes: changed sections only, unchanged wording preserved exactly, effort tiered to clinical risk. |
-| [`/sync-mirrors`](commands/sync-mirrors.md) | Date-marker drift detection for every file that restates your canonical rules — because each agent reads a different entry-point file. |
-| [`/session-handoff`](commands/session-handoff.md) | Session close-out: pre-flight scan, monotonic session numbering, intact attachments, mandatory negative declarations, human review gate. |
+| [`/sync-mirrors`](commands/sync-mirrors.md) | Drift detection for every file that restates your canonical rules — because each agent reads a different entry-point file. Two markers per mirror: a canonical date, plus a commit SHA pinning the content someone actually read, so a mirror edited on its own still flags. |
+| [`/session-handoff`](commands/session-handoff.md) | Session close-out: pre-flight scan, an independent audit of the session by a second agent, intact attachments, mandatory negative declarations, human review gate, then drop the entry unnumbered for a single serializing filer. |
 | [`/monthly-audit`](commands/monthly-audit.md) | Automation health check (artifacts, not logs — the false-green rule) + a monthly review of which workflows deserve to become skills. |
 
 ## Using these
