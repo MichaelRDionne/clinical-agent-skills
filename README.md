@@ -35,6 +35,7 @@ These recur across every file and are the actual transferable IP:
 | [`multi-agent-protocol`](skills/multi-agent-protocol/SKILL.md) | How multiple agents share one working directory safely: tier model, GREEN/YELLOW/RED, the async file-based handoff channel, a write-defensively concurrency doctrine, browser-surface boundaries. |
 | [`debugging-playbook`](skills/debugging-playbook/SKILL.md) | Symptom → meaning → **discriminating test** → action, one row per incident-backed failure mode. Includes the "dismissed side-signal = canary" rule. |
 | [`portfolio-safety-check`](skills/portfolio-safety-check/SKILL.md) | Pre-publish audit for a professional's public GitHub: the employer/vendor/colleague layer that generic secrets scanners miss, git-history leak checks, a claim-honesty pass (can you defend every README claim in an interview?), a stale-clone concurrency gate, and the flip-private → genericize → verify-live remediation pattern. (This repo passed its own check before publishing.) |
+| [`writing-without-ai-tells`](skills/writing-without-ai-tells/SKILL.md) | Why AI prose reads as AI, and what to do instead: the two underlying drivers (over-explaining, performed rigor), the systemic levers that suppress them, a scoring-based calibration procedure, an experience-injection method, and a QC appendix of named tells — including a keyword guard showing that the words detectors flag hardest are the ones readers never cite. |
 
 ### Commands (`commands/*.md`)
 
