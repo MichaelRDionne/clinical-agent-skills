@@ -1,0 +1,51 @@
+# Canonical public-exposure match list — TEMPLATE
+# v1. Copy this to `match-list.grep` alongside it, replace every placeholder with
+# your own real terms, and keep YOUR filled copy out of any public repo — the
+# filled file is an inventory of exactly the names you are trying to protect.
+# Add `references/match-list.grep` to .gitignore, or keep it in private notes and
+# point the skill's $ML variable at that path.
+#
+# WHY THIS FILE EXISTS: in the originating setup, a pre-merge safety grep ran a
+# narrower term list than the post-push live verify — a few terms were present in
+# one and absent from the other, because both were re-typed inline at the point of
+# use. The narrower screen was the one gating the irreversible step. Nothing leaked
+# that time. The fix is structural: one versioned file, read by every pass —
+# step-1 working tree, step-4 history, the remediation live verify, and any
+# pre-merge check a session improvises. Bump the version + date on any term change.
+#
+# FORMAT: one extended-regex (ERE) pattern per line, matched case-insensitively.
+# Comment lines start with '#' — strip them before use:
+#   grep -v '^#' match-list.grep | grep -rniE --exclude-dir=.git -f - .
+#
+# INTERPRETATION (same as step 1 of the skill): any hit in a public-bound repo is
+# a finding; the question is genericize / delete / deliberate-approved
+# self-reference. Your own brands may be legitimately public in their OWN branded
+# repos by explicit disposition — never by default, and never silently. Legal- or
+# regulatory-matter vocabulary has no approved bucket at all. Eyeball every hit;
+# generic-word collisions are dismissed per-hit and never by trimming the list,
+# because a trimmed list re-creates the failure this file exists to prevent.
+
+# --- employers / practices / brands ---
+your-employer-name
+your-practice-brand
+former-employer
+
+# --- vendors / products tied to the real job ---
+your-ehr-vendor
+your-lab-vendor
+your-messaging-vendor
+vendor-tool-prefix-
+
+# --- people (colleagues / contacts — roles are fine, names never) ---
+supervisor-surname
+colleague-surname
+attorney-surname
+
+# --- internal content / character / codenames ---
+internal-project-codename
+teaching-character-name
+
+# --- matter vocabulary — zero tolerance, no approved bucket ---
+regulator-name
+your-case-number
+matter-specific-phrase

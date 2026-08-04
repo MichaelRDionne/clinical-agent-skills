@@ -66,6 +66,18 @@ Three patterns survive the change. Each becomes a note the filer reads:
 
 **Do not stamp a session number on anything at authoring time** — not filenames, not attachment slugs, not report artifacts, not links between entries. The number does not exist until the filer runs. Reaching for one mid-session is the signal that something is about to be misfiled.
 
+### If you enforce that rule with a script, mind the allowlist
+
+Filename and frontmatter checks miss the case that actually bites: a free-text `S<n>` anchor written into the *body* of a tracker or wiki page. In the originating setup, four such mis-stamps landed in three days after the filename gates shipped, so the body scan became a required close-out receipt.
+
+A body scan immediately hits a legitimate exception. Some anchors point at numbers a session claimed and then never filed — the number is spent, no entry will ever exist, and the reference is correct history. Those produce a red that can never be cleared, and a permanent red is one a reader learns to skip. The fix is a small registry of claimed-but-never-filed numbers that the checker subtracts. Three properties make it safe, and all three were bought the hard way:
+
+1. **Fail closed in both directions.** A malformed registry line is a hard error with its own exit code, never a skipped line. A *missing* registry file means an empty registry — strictly more red, never less. An allowlist whose absence quietly suppresses alerts is worse than no allowlist.
+2. **Never add an entry to silence a red you are currently looking at.** Additions require independent evidence that the number was really claimed and really never filed. Skip this and the registry degrades into a mute button, which is the failure mode every suppression list converges on unless the rule is written down next to the list.
+3. **Keep the registry outside the checker's own inputs.** If the checker derives "already filed" from a directory listing, the registry file must not appear in that listing — a dotfile, or a path outside the scanned tree. Otherwise the fix feeds itself.
+
+One more, from watching the change nearly undo itself: the first draft of the registry patch carried a test stamp written in the same form as a real anchor, which would have re-created the exact permanent red the change was retiring. Write self-test fixtures so they cannot be mistaken for the thing they test — assemble the literal from pieces at runtime, so the pattern exists only while the test runs.
+
 ## Step 4 — Documents → summarize + attach
 
 For every document surfaced, pasted, fetched, or produced this session: write a 1–3 sentence summary in the entry's **Attachments** block, and stage the **full document intact** alongside the draft as `<DRAFT_BASE>--<kebab-slug>.<ext>`. The filer renames it to `S<n>-<kebab-slug>.<ext>` and moves it into `session-log/_attachments/` with the entry. Do not truncate or reformat the staged copy — it is the archival original.

@@ -72,19 +72,17 @@ Run against a **freshly fetched** local clone (`gh repo clone <user>/<repo> /tmp
 
 ### 1. The personal match list (the layer generic tools lack)
 
-Maintain a **private** file of the specific terms that must never appear publicly — employer names, workplace vendor names, colleague names, matter-specific vocabulary. It lives in your private notes, NEVER in a public repo (this public copy uses placeholders):
+Maintain a **private, versioned file** of the specific terms that must never appear publicly — employer names, workplace vendor names, colleague names, matter-specific vocabulary. `references/match-list.example.grep` next to this skill is the template: copy it to `match-list.grep`, fill in your real terms, and keep the filled copy out of every public repo. The filled file is an inventory of exactly the names you are protecting, so it is the one artifact here that must never ship.
 
 ```bash
-# Working tree — real-world identifying context (SUBSTITUTE YOUR OWN TERMS)
-grep -rniE --exclude-dir=.git \
-  'employer-name|ehr-vendor-name|vendor-prefix-|colleague-1|colleague-2|attorney-name' .
-
-# Matter vocabulary — zero tolerance in anything public (SUBSTITUTE YOUR OWN)
-grep -rniE --exclude-dir=.git \
-  'regulator-name|case-number|matter-specific-phrase' .
+ML="<path-to-your-private>/match-list.grep"
+# Working tree — all categories (employers, vendors, people, matter vocabulary) in ONE pass
+grep -v '^#' "$ML" | grep -rniE --exclude-dir=.git -f - .
 ```
 
-Interpretation: **any hit on an employer/vendor/person term in a public-bound repo is a finding** — the question is only whether it's (i) genericize, (ii) delete, or (iii) a deliberate, principal-approved self-reference. Short prefixes will false-positive — eyeball each hit; don't bulk-dismiss.
+**One file, every pass — never re-type a term list inline.** This is a rule rather than a style preference, and it was written after a near-miss: a pre-merge safety grep and the post-push live verify each carried their own hand-typed list, the two lists had drifted apart, and the shorter one happened to be the pass gating the irreversible step. The publish was clean anyway, which is the part worth noticing — an inline list fails silently and looks identical to a real screen right up until the day it doesn't. Every pass in this skill now reads `$ML`: step 1, step 4's history scan, and the remediation live verify.
+
+Interpretation: **any hit on an employer/vendor/person term in a public-bound repo is a finding** — the question is only whether it's (i) genericize, (ii) delete, or (iii) a deliberate, principal-approved self-reference. Short prefixes will false-positive — eyeball each hit; don't bulk-dismiss, and never resolve a noisy pattern by deleting it from the list.
 
 ### 2. Standard secrets/PII sweep
 
@@ -116,8 +114,8 @@ Each hit: is it the repo's deliberate product, or session residue? Residue → d
 # Every path that ever existed, incl. deleted — eyeball for artifact/credential names
 git log --all --pretty=format: --name-only --diff-filter=A | sort -u
 
-# Match-list terms anywhere in any historical blob
-git grep -iE '<your-match-terms>' $(git rev-list --all) -- . | head -50
+# Match-list terms anywhere in any historical blob — same canonical file step 1 reads
+git grep -iE -f <(grep -v '^#' "$ML") $(git rev-list --all) -- . | head -50
 ```
 
 A hit only in history of a repo going public → either rewrite history (`git filter-repo`), or — usually simpler — **create a fresh repo from a clean export of the current tree** (or orphan-squash + force-push) and verify from an independent fresh clone. History rewrite on an already-public repo does NOT purge existing forks/clones/caches; treat anything that was public as permanently exposed and assess accordingly.
@@ -171,7 +169,14 @@ Order matters. Private-first because it's fast, reversible, and stops new indexi
 1. **Flip private immediately:** `gh repo edit <user>/<repo> --visibility private --accept-visibility-change-consequences`. Do this before perfecting the fix.
 2. **Genericize, don't gut.** Keep all the engineering substance — architecture, code, metrics, lessons. Replace only the identifying nouns: real employer → "a clinical practice"; real EHR vendor → "a cloud-based EHR"; vendor-prefixed tool names → generic prefixes (renamed consistently across code, docs, and repo description); colleague names → roles. The demo value survives fully genericized.
 3. **Check history** (step 4). Historical-only exposure in a repo that was public → fresh-repo or orphan-squash route.
-4. **Push, then verify LIVE — never trust the push as proof:** fetch the raw served content post-flip; old terms absent (`curl ... | grep -icE '<terms>'` must be 0), renamed paths 404, new generic text is what's actually served. And clone fresh + `git log --all -p | grep` — tree-clean is not history-clean.
+4. **Push, then verify LIVE — never trust the push as proof:** fetch the raw served content post-flip and run the SAME canonical list the pre-merge pass used (`$ML` from step 1, never a subset):
+   ```bash
+   curl -s https://raw.githubusercontent.com/<user>/<repo>/main/README.md \
+     | grep -icE -f <(grep -v '^#' "$ML")            # must be 0
+   curl -s -o /dev/null -w '%{http_code}\n' \
+     https://raw.githubusercontent.com/<user>/<repo>/main/<old-renamed-path>   # must be 404
+   ```
+   Old terms absent, renamed paths 404, new generic text is what's actually served. And clone fresh + `git log --all -p | grep` — tree-clean is not history-clean.
 5. **Log it** — a dated line in your session log: repo, what was found, disposition.
 
 ## When NOT to use this
@@ -182,4 +187,6 @@ Order matters. Private-first because it's fast, reversible, and stops new indexi
 
 ## Maintenance triggers
 
-(1) New employer, vendor, or named work contact → add to the private match list the same session you learn of it. (2) A new public surface class (Pages site, gists, org account) → extend the sweep commands. (3) Any future incident → append what was missed and which check would have caught it.
+(1) New employer, vendor, or named work contact → add it to `match-list.grep` the same session you learn of it, and bump the file's version line. (2) A new public surface class (Pages site, gists, org account) → extend the sweep commands. (3) Any future incident → append what was missed and which check would have caught it.
+
+Verify a list change the way you'd verify any other gate: plant a known-positive fixture containing a term the new version adds, confirm the grep fires on it, then re-sweep the real tree. A match list nobody has seen fail is a match list nobody has tested.
