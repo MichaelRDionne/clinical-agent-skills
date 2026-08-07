@@ -57,6 +57,13 @@ One report in chat, outcome first:
 
 The board update IS the record — don't file a duplicate report.
 
+## Two more audit-design ideas
+
+Learned from surfaces specific enough that the checks that found them don't belong in a template like this — but the underlying ideas travel:
+
+- **A remediation checklist can only cover ground someone already thought to list.** Pair it with an occasional sweep that excludes nothing and assumes every directory could be dirty; its job is finding new surfaces to add to the checklist, not fixing them. A checklist audited only against itself stays blind to whatever it never thought to include.
+- **A policy with no technical enforcement is not unauditable — audit its artifact trail instead of the policy.** If a rule says "only X may trigger Y" and nothing in the system actually blocks anyone else from triggering Y, check for Y's own byproducts (files it always writes, timestamps it always leaves) rather than trying to verify compliance directly.
+
 ## The transferable pattern
 
 The load-bearing ideas: **one board for all jobs** (scattered automations rot invisibly), **proof-it-fired columns** (every job declares its own verification), **artifacts over logs** (false-green rule), **manual-run ≠ trigger-proof**, and **stage the unverifiable to one human action** instead of skipping it.
