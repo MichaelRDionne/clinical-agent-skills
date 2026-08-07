@@ -162,7 +162,7 @@ Every one of these previously produced a clean-looking `[OK]`, and every one was
 Stated plainly, because a check whose limits are undocumented gets trusted past them:
 
 - **The anchor is self-asserted.** Nothing forces the stamper to have actually read the file. What the scheme buys is detectability after the fact: the SHA pins exactly what was claimed-read, so a false stamp can be caught later. Call it bookkeeping with receipts and set your expectations there.
-- **Canonical has no anchor of its own.** There is nothing to compare it against, so its check stays date-based. A rule edited later on the same day, without a `date_modified` bump, is missed. If you hand-edit canonical, bump the date.
+- **Canonical has no anchor of its own.** There is nothing to compare it against, so its baseline check stays date-based. That check can still close part of its own gap: it can also diff canonical's working tree against its last commit, so an edit sitting uncommitted is caught immediately rather than waiting for whatever auto-commits the repo. What it still cannot catch is a rule edited *and committed* later the same day without a `date_modified` bump — closing the uncommitted-edit case doesn't close the same-day-committed one. If you hand-edit canonical, bump the date.
 - **`[OK]` is not semantic equivalence.** It means the mirror was synced to the current canonical date and nothing has committed against it since.
 - **Scope is the tracked set only.** Uncommitted edits are caught, but only for files in `mirrors.list`. Untracked restatements elsewhere stay out of scope by design — pointer-ize those rather than tracking more copies.
 
