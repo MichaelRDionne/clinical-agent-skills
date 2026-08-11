@@ -48,6 +48,8 @@ These recur across every file and are the actual transferable IP:
 | [`/sync-mirrors`](commands/sync-mirrors.md) | Drift detection for every file that restates your canonical rules — because each agent reads a different entry-point file. Two markers per mirror: a canonical date, plus a commit SHA pinning the content someone actually read, so a mirror edited on its own still flags. |
 | [`/session-handoff`](commands/session-handoff.md) | Session close-out: pre-flight scan, an independent audit of the session by a second agent, intact attachments, mandatory negative declarations, human review gate, then drop the entry unnumbered for a single serializing filer. |
 | [`/monthly-audit`](commands/monthly-audit.md) | Automation health check (artifacts, not logs — the false-green rule) + a monthly review of which workflows deserve to become skills. |
+| [`/kickoff`](commands/kickoff.md) | Session start: files any pending drafts, loads your rules, checks the task register for staleness with a mechanical (not eyeballed) gate, proposes one specific top priority. |
+| [`/thread-census`](commands/thread-census.md) | Periodic sweep of the session-log corpus for work recorded open and never closed — the entry-number-vs-filename-date ordering trap, and the "closed out-of-band" vs "silently dropped" distinction. |
 
 ## Using these
 
