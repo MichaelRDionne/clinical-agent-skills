@@ -52,6 +52,16 @@ This command doesn't ship that script either — it's a few lines against your o
 
 On **STALE** or **ERROR**: report the exact state, do **not** propose a priority or begin task work, and ask the operator for one explicit choice: reconcile the register now, or override this kickoff once. An override is only for that kickoff; it does not clear the gate. Never replace the check with a date comparison, and never rationalize past its nonzero exit.
 
+### Step 3b — Silent-queue check
+
+Work staged by one session for a later session, or requests placed into an external system, can age silently: no error, no alert. A reminder inside the tool that creates the work fires only for sessions already in that tool; the session that needs the reminder is never in it. Kickoff is the session that runs when nobody is thinking about it. In two past incidents, an item had been staged for pickup twice and was never worked; an external-system request was found incidentally weeks later with every row still unworked. This mechanical kickoff check was chosen over pairing a register row at staging time because it does not depend on a future session remembering anything.
+
+Mechanically enumerate each staged-work queue: use a directory listing for local staged work, and an authenticated pending view for external systems. Before trusting an empty external view, assert the filter state that defines pending. Examples include a transcript staged for redaction and an order pending in an external system.
+
+If a queue is unreachable — its storage location is unavailable, login expired, or offline — report it as **UNCHECKED**, never clear. "Could not look" and "found nothing" must never share an output path.
+
+Surface aged items in the kickoff message oldest-first, with dates and counts only; never echo item identifiers. Treat every aged item as a priority candidate; never carry it silently.
+
 ### Step 4 — Propose today's priority
 
 Only run this step after the task-register gate reports CURRENT, or after the operator explicitly grants a one-kickoff override.
