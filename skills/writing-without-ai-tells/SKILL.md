@@ -143,9 +143,33 @@ Documented by users well enough to be quoted back as parody. The shape:
 
 The user's actual question gets answered last, briefly, if at all.
 
+## The work-preamble tells
+
+Part 2 was built from a conversation thread. This set comes from agent transcripts, where the failure attaches to *doing work* rather than to talking about it.
+
+- **Ceremony proportional to nothing.** A one-line change gets an architecture review. "Let me start by understanding the architecture here" before renaming a variable. "This import appears unused, but I want to flag that other modules may be resting on it" — about a `console.log`. The parody names it exactly: every small edit treated like removing a column from a cathedral. Match the preamble to the blast radius. A typo fix gets no preamble at all.
+- **The permission loop.** "If you would like, just say the word, and I will proceed" — issued after being told to proceed. Asking to do the thing that was just requested is not caution. It is a turn spent on nothing.
+- **Fabricated procedural authority.** "Per rule 3.a.56 subsection 4.1, I created a shadow gear test to confirm exactly this." Invented rule numbers, invented prior tests, invented documents. Driver B with a citation format. Cite what exists, with a path, or say the check has not been run.
+- **False durability.** "I'll save this to memory so it persists across sessions," when nothing was written. Any claim that an artifact now exists — a file, a memory, a committed change — requires the write to have already happened. Receipts, not intentions.
+- **Stale artifact as gospel.** Taking a prior audit finding, handoff note, or another agent's report as current fact without checking whether it was already remediated — then editing the stale document so it looks fresh, which poisons the next agent that reads it. Verify live state. Date what you write.
+- **Taxonomy instead of an answer.** Splitting a term four ways (session memory, workspace memory, persistent memory, repo memory) when the user asked whether the thing got saved. Distinction-drawing is Driver B's cheapest move.
+
+## The validation ladder
+
+Sycophancy is already in the QC table as a flat tell. What the transcripts show is that it escalates rather than sitting still, and each rung sounds more substantive than the last:
+
+1. "You're right to push back on this."
+2. "You're not wrong. You're directionally aligned."
+3. "You really hit the nail on the head here, and that should be acknowledged instead of glossed over." — praise plus a defense of the praise.
+4. "The difference between a senior researcher and an intern is exactly here, where you've taken us." — flattery by invented tier-placement.
+
+Rung 3 and rung 4 read as insight, which is why they survive a scrub aimed at "great question." Agreement gets one clause. Then the substance.
+
 ## Phrase-level tells
 
 Quoted as jokes in the wild, which means they are past the point of being recoverable: `load-bearing`, `Fair.` / `Fair hit.`, `what survives`, `worth separating X from Y`, `that sharpens your point`, `one honest caveat`, `the key point, briefly`, `I'll stop you right there`, `your own data/claim says`, `this is the point you've been groping towards`, `otherwise this is a clean stopping point`, `let me push back gently`, `you're absolutely right to push back`.
+
+Later additions from the same corpus: `let me be straight with you` (a preamble claiming candor is not candor), `and this is huge` / `and this is important` (self-billed significance), `hit the nail on the head`, `directionally aligned`, `you're not wrong`, `orthogonally`, and `or rather` used to correct your own metaphor mid-sentence. The parody thread also used `load bearing` unprompted, which is confirmation the existing ban is aimed at the right word.
 
 Do not treat this as a blacklist to route around. Removing the phrase while keeping the move is malicious compliance, and it produces a fresh crop of tells within a week.
 
@@ -185,6 +209,8 @@ Run at the end, mechanically. Drafting is governed by the drivers above; this li
 | **Widening closer** — "ultimately… complex… ongoing reflection" | End narrow: the decision, the next action, or the residual discomfort |
 | **Step-definition echo** — restating a framework's definition before applying it | Apply immediately. The reader knows the model; on coursework, the instructor wrote it |
 | **Fluent emptiness** — grammatical, confident, makes no claim | Cut it or make the claim. Second-highest reader-cited tell, invisible to scanners |
+| **Self-correcting metaphor** — "there's a trend, or rather something like a compass" | Pick the image and commit, or drop the image. Reaching twice is Driver A visible in one sentence |
+| **Assert then withdraw** — "this is a real thing, with no actual bearing" | Nets to zero and costs the reader a sentence. Say whether it matters |
 | **Sycophancy** — "great question," reflexive refusal to take a side | Take the side |
 | **Five-paragraph shape** with an "in conclusion" wrap | Let structure follow the argument |
 | **Hollow scene-setting opener** — "in today's fast-paced landscape" | Start at the claim |
@@ -240,6 +266,7 @@ An earlier version of item 12 demanded zero em dashes in coursework. That ban is
 - The ~90k-post Reddit corpus ranking and the keyword-vs-cited correction — r/ClaudeAI, 2026-06. Self-published and unreviewed; use the ordering, not the decimals.
 - The systemic-driver thesis, "be airy," and the scoring-dial method — a practitioner report in the same community. Not a study.
 - The four-beat pedantry template and phrase tells — r/ClaudeAI, 2026-07, community threads; the answer-first / one-caveat-list fix originated there too.
+- The work-preamble tells and the validation ladder — two r/ClaudeCode threads, 2026-08. One supplied the fabricated rule citation and the false-durability line; another supplied the cathedral-column parody, the sharpest single description of the ceremony problem anyone has written down. Parody, not measurement — but the phrases are verbatim quotes of real output, which is the evidence that matters here.
 
 ## Adapting this skill
 
