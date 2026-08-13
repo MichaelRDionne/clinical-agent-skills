@@ -7,8 +7,8 @@ description: >-
   Pages site, or running a periodic full-portfolio audit. Catches what generic
   PHI/secrets scanners miss: real employer/practice names, real vendor/product names
   tied to a real job, real colleague names, described production architecture,
-  agentic-workflow artifacts, git-history leaks of deleted files, and
-  inference/combination risk.
+  agentic-workflow artifacts, git-history leaks of deleted files and commit
+  messages, internal model/project codenames, and inference/combination risk.
 ---
 
 # portfolio-safety-check — pre-publish audit
@@ -36,7 +36,7 @@ If the principal says "just flip it, it's fine" — run the check anyway; it tak
 
 ## What to check — priority order
 
-Ordered by *distinctiveness of the risk*: (a)–(c) are what nothing else catches; (d)–(f) are table stakes; (g) is the reasoning layer.
+Ordered by *distinctiveness of the risk*: (a)–(d) are what nothing else catches; (e)–(g) are table stakes; (h) is the reasoning layer.
 
 **(a) Real employer / practice names.** Any current or past employer or facility name. The principal's own public brand is their call, not an automatic hit — but flag it so the association is deliberate, never accidental.
 
@@ -44,13 +44,15 @@ Ordered by *distinctiveness of the risk*: (a)–(c) are what nothing else catche
 
 **(c) Real colleague, contact, supervisor, or (obviously) patient names.** Any personal name other than the principal's own. Also usernames, email handles, and chat display names in pasted logs.
 
-**(d) Standard PII/secrets patterns:** API keys and tokens (`sk-`, `ghp_`, `AKIA`, `xox[bap]-`, `AIza`, private-key headers), emails, phone numbers, `.env`/credential files, absolute home-directory paths (they leak the machine username and directory layout).
+**(d) Internal model/project codenames.** Private nicknames for a model tier, a persona, a project, or an internal build. They read as ordinary English words to a naive scanner — nothing about them matches a PII or secrets pattern — but they function as identifiers exactly like (a)–(c): narrow, deliberately-chosen vocabulary a small circle recognizes and a search engine indexes. The tell is usage, not spelling — a word used consistently as a proper noun standing in for a model, persona, or build (a `model:` frontmatter value, a persona label, an internal alias in a README) rather than in its dictionary sense. In the originating setup a codename sat publicly in a command's `model:` frontmatter and a README's model-alias list for twelve days. It was caught only by a human inference read, because it was not on the match list and no mechanical gate ever fired. Add every such codename to the match list the same session you learn it leaked, same as an employer or vendor name.
 
-**(e) Agentic-workflow artifacts.** `handoff*.md`, session logs, `.claude/`, `.codex/`, `CLAUDE.md`, `AGENTS.md`, transcripts, scratchpad dumps. Two risks: they carry working context (paths, names, live project state), and internal files can carry internal-only vocabulary. Note the distinction: a repo *shipping a skill/agent config as its product* is fine; a repo that *accidentally includes its own development session residue* is not.
+**(e) Standard PII/secrets patterns:** API keys and tokens (`sk-`, `ghp_`, `AKIA`, `xox[bap]-`, `AIza`, private-key headers), emails, phone numbers, `.env`/credential files, absolute home-directory paths (they leak the machine username and directory layout).
 
-**(f) Git history.** Deleted files are not gone — they live in every clone's history until history is rewritten. A file scrubbed from the tree but present in an old commit is still fully public. Scan `git log --all`, not just HEAD.
+**(f) Agentic-workflow artifacts.** `handoff*.md`, session logs, `.claude/`, `.codex/`, `CLAUDE.md`, `AGENTS.md`, transcripts, scratchpad dumps. Two risks: they carry working context (paths, names, live project state), and internal files can carry internal-only vocabulary. Note the distinction: a repo *shipping a skill/agent config as its product* is fine; a repo that *accidentally includes its own development session residue* is not.
 
-**(g) Inference / combination risk.** No single field sensitive, but the combination identifies: "a small practice in [city]" + a role + a panel description; a distinctive tool architecture only one real deployment matches. Also: any legal/regulatory-matter vocabulary the principal's rules ban from public text must never appear in any public repo in any form. This is the layer regex can't do — read the prose as a hostile identifier would.
+**(g) Git history — tree content AND commit messages.** Deleted files are not gone — they live in every clone's history until history is rewritten. A file scrubbed from the tree but present in an old commit is still fully public. Two distinct surfaces, and a scan of one does not cover the other: `git grep <term> <rev>` searches tracked file *content* at each revision and never looks at the commit *message* text. A term that only ever appeared in a commit message is invisible to a blob-content scan and to GitHub's `search/code` index. That is how the (d) leak survived: the working tree was fixed the same day, but the same codename remained in public commit messages because nothing had ever scanned message text against the match list. Step 4 runs both surfaces separately.
+
+**(h) Inference / combination risk.** No single field sensitive, but the combination identifies: "a small practice in [city]" + a role + a panel description; a distinctive tool architecture only one real deployment matches. Also: any legal/regulatory-matter vocabulary the principal's rules ban from public text must never appear in any public repo in any form. This is the layer regex can't do — read the prose as a hostile identifier would.
 
 ## Step 0 — re-fetch before you push (concurrency, not content)
 
@@ -76,7 +78,7 @@ Maintain a **private, versioned file** of the specific terms that must never app
 
 ```bash
 ML="<path-to-your-private>/match-list.grep"
-# Working tree — all categories (employers, vendors, people, matter vocabulary) in ONE pass
+# Working tree — all categories (employers, vendors, people, codenames, matter vocabulary) in ONE pass
 grep -v '^#' "$ML" | grep -rniE --exclude-dir=.git -f - .
 ```
 
@@ -108,7 +110,17 @@ find . -maxdepth 3 -type d \( -name '.claude' -o -name '.codex' \) -not -path '.
 
 Each hit: is it the repo's deliberate product, or session residue? Residue → delete AND check history (step 4).
 
-### 4. Git history — deleted files and past content
+**Commit messages are agentic artifacts too.** Agent harnesses append co-author and session-link trailers to commit messages by default. On a public repo those become session residue in permanent, unrewritable history — the session URL most of all. Strip them from every public-repo commit message; the harness default is written for private work and does not survive the visibility boundary.
+
+```bash
+git log --format='%B' $(git rev-list --all) | grep -ciE 'Claude-Session|Co-Authored-By: Claude'   # must be 0
+```
+
+Note the ordering trap. This check reads the message you are about to write, which does not exist yet when you first run step 3 against the tree. One publish here declared step 3 clean, then produced a commit carrying both trailers; the permission layer happened to deny that call for an unrelated reason and the rewritten command dropped them. Right outcome, reached by luck. Re-run the grep against the message itself, immediately before committing — and against `--all` afterward, since a trailer already merged is a history problem (step 4), not a tree problem.
+
+This trailer check is deliberately narrow — two literal patterns, run against the message you are about to commit, catching session-URL residue before it is permanent. It is not a substitute for step 4's full-history commit-message scan below, which runs the entire match list (including the (d) codename class) against every commit message that already exists. Run both; they catch different things at different times.
+
+### 4. Git history — deleted files, past content, AND commit messages
 
 ```bash
 # Every path that ever existed, incl. deleted — eyeball for artifact/credential names
@@ -116,7 +128,17 @@ git log --all --pretty=format: --name-only --diff-filter=A | sort -u
 
 # Match-list terms anywhere in any historical blob — same canonical file step 1 reads
 git grep -iE -f <(grep -v '^#' "$ML") $(git rev-list --all) -- . | head -50
+
+# Match-list terms in COMMIT MESSAGES — a distinct surface the blob scan above never
+# touches. `git grep <rev>` searches tracked FILE CONTENT at that revision; it does not
+# search message text, so a term that only ever appeared in a commit message is
+# invisible to the line above and to GitHub's search/code index. This is the exact
+# gap that let the (d) leak survive in public commit messages after the tree copy
+# was already fixed.
+git log --all --format='%B' | grep -icE -f <(grep -v '^#' "$ML")
 ```
+
+If you already accepted a historical exposure — a term that only ever appeared in commit messages, and you declined history rewrite as riskier than leaving it — record that count next to the command. Future runs compare against the recorded baseline. A higher count is new. Do not drop the term from the match list to make the number go away; either move reopens the decision you already made. Any other repo should read 0.
 
 A hit only in history of a repo going public → either rewrite history (`git filter-repo`), or — usually simpler — **create a fresh repo from a clean export of the current tree** (or orphan-squash + force-push) and verify from an independent fresh clone. History rewrite on an already-public repo does NOT purge existing forks/clones/caches; treat anything that was public as permanently exposed and assess accordingly.
 
@@ -169,14 +191,23 @@ Order matters. Private-first because it's fast, reversible, and stops new indexi
 1. **Flip private immediately:** `gh repo edit <user>/<repo> --visibility private --accept-visibility-change-consequences`. Do this before perfecting the fix.
 2. **Genericize, don't gut.** Keep all the engineering substance — architecture, code, metrics, lessons. Replace only the identifying nouns: real employer → "a clinical practice"; real EHR vendor → "a cloud-based EHR"; vendor-prefixed tool names → generic prefixes (renamed consistently across code, docs, and repo description); colleague names → roles. The demo value survives fully genericized.
 3. **Check history** (step 4). Historical-only exposure in a repo that was public → fresh-repo or orphan-squash route.
-4. **Push, then verify LIVE — never trust the push as proof:** fetch the raw served content post-flip and run the SAME canonical list the pre-merge pass used (`$ML` from step 1, never a subset):
+4. **Push, then verify LIVE — never trust the push as proof:** fetch the raw served content post-flip and run the SAME canonical list the pre-merge pass used (`$ML` from step 1, never a subset). **Resolve the tip SHA from the API first and fetch by SHA:**
    ```bash
-   curl -s https://raw.githubusercontent.com/<user>/<repo>/main/README.md \
-     | grep -icE -f <(grep -v '^#' "$ML")            # must be 0
+   SHA=$(gh api repos/<user>/<repo>/branches/<default-branch> --jq '.commit.sha')
+   curl -s "https://raw.githubusercontent.com/<user>/<repo>/$SHA/README.md" > /tmp/served.md
+   wc -c /tmp/served.md                                # must differ from the pre-push size
+   grep -icE -f <(grep -v '^#' "$ML") /tmp/served.md   # must be 0
    curl -s -o /dev/null -w '%{http_code}\n' \
-     https://raw.githubusercontent.com/<user>/<repo>/main/<old-renamed-path>   # must be 404
+     "https://raw.githubusercontent.com/<user>/<repo>/$SHA/<old-renamed-path>"   # must be 404
    ```
    Old terms absent, renamed paths 404, new generic text is what's actually served. And clone fresh + `git log --all -p | grep` — tree-clean is not history-clean.
+
+   > [!warning] `/main/` can certify the commit you just replaced
+   > `raw.githubusercontent.com/<repo>/main/<path>` is edge-cached. Seconds after a push it still serves the pre-push bytes, so the match-list grep returns a **real 0 against content that is no longer current** — a pass nobody earned. This was caught on a live publish: `/main/README.md` returned the stale 1,354-byte copy, and was *still* stale on a cache-busted re-fetch minutes later, while the SHA-pinned URL returned the correct 2,187-byte payload. Both read `hits=0`. Only one meant anything.
+   >
+   > The SHA-pinned URL is immutable and never stale. Belt-and-suspenders: assert the served byte count **changed** from the pre-push fetch. An unchanged length after a push that reported inserted lines is the tell. Measure with `wc -c` on the fetched file — a character count from a script's string length is a different number wearing the same label.
+
+   Same failure family as the history lesson above: verify the wrong artifact, read its clean result as clearance.
 5. **Log it** — a dated line in your session log: repo, what was found, disposition.
 
 ## When NOT to use this
@@ -187,6 +218,6 @@ Order matters. Private-first because it's fast, reversible, and stops new indexi
 
 ## Maintenance triggers
 
-(1) New employer, vendor, or named work contact → add it to `match-list.grep` the same session you learn of it, and bump the file's version line. (2) A new public surface class (Pages site, gists, org account) → extend the sweep commands. (3) Any future incident → append what was missed and which check would have caught it.
+(1) New employer, vendor, named work contact, or internal model/project codename → add it to `match-list.grep` the same session you learn of it, and bump the file's version line. Codenames are (d): the same mechanical gate as an employer or vendor name once they are on the list. (2) A new public surface class (Pages site, gists, org account) → extend the sweep commands. (3) Any future incident → append what was missed and which check would have caught it.
 
 Verify a list change the way you'd verify any other gate: plant a known-positive fixture containing a term the new version adds, confirm the grep fires on it, then re-sweep the real tree. A match list nobody has seen fail is a match list nobody has tested.
