@@ -10,6 +10,7 @@ Purpose: find work **recorded as open and never closed** that your live task reg
 
 - Find the previous census: grep your session-log directory for `census` / `sweep` entries; the newest one's coverage end-date is this run's **floor**.
 - Scope = floor → today. Record the new floor in the output so the next census can chain. Include any unfiled drafts sitting in your filing basket (see `/session-handoff`) in the corpus — they record open/owed work same as a filed entry, just not yet numbered.
+- Number-scoped sweeps are blind by construction to files carrying no entry number. Keep a small allowlist of known-covered unnumbered files with a count; assert with a one-line shell check against your own naming pattern that the set has not grown. Any count above the allowlist forces a date-scoped catch-up for the new files before the run proceeds; legitimate allowlist growth updates the count and says so in the output.
 
 ## Step 1 — parallel sweep
 
@@ -23,6 +24,10 @@ One agent per stretch of logs (a month's worth is a reasonable unit), each answe
 Cross-check the two at Step 0 and record any disagreement in the output.
 
 **Corpus size decides the force structure.** The parallel-agent fan-out is a token-budget device for a large corpus. Under roughly 60 entries, read the logs directly — agent summaries drop the literal "flags" / "open threads" text that reconciliation runs against, so delegation costs fidelity and buys nothing at that scale. Whichever you choose, **declare it in the output**.
+
+## Step 1b — enumerate inbox checkpoints
+
+The census oracle has been session-log-only: obligations living in inbox checkpoint files are invisible to it, and one run's only genuine recoveries came from checkpoints reached by luck — a blind spot that self-heals by luck is a blind spot. Run one `ls` over your inbox's checkpoint files (a `CHECKPOINT-*.md` pattern is a fine example); reconcile each against the live register by content anchor — not filename, not whether a session log mentions it. A checkpoint whose own header says a resuming session has nothing to execute is closed; one carrying live pending decisions the register lacks is a recovery.
 
 ## Step 2 — reconcile, with the known failure modes in view
 
