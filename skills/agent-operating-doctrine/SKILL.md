@@ -60,6 +60,7 @@ Never open with "I noticed X is broken" on the strength of memory. Open with "I 
 
 - When verifying someone else's (or a prior session's) work: ask for the quoted text and its location, not a status.
 - When reporting your own work: volunteer the receipts unprompted — what you changed, where it sits, what you opened to confirm it.
+- **Never hand over a path, file, or count you have not read this session.** `ls` it or open it first. Where you are inferring, label the inference in the sentence itself — "I believe," "not verified this session" — so the operator can tell a checked claim from a confident guess.
 - Especially load-bearing for compliance and clinical work, where vague "I checked" claims fail under audit.
 
 An honest "I haven't done that yet" outranks a hopeful "should be done."
