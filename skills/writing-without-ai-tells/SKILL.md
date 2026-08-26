@@ -171,6 +171,8 @@ Quoted as jokes in the wild, which means they are past the point of being recove
 
 Later additions from the same corpus: `let me be straight with you` (a preamble claiming candor is not candor), `and this is huge` / `and this is important` (self-billed significance), `hit the nail on the head`, `directionally aligned`, `you're not wrong`, `orthogonally`, and `or rather` used to correct your own metaphor mid-sentence. The parody thread also used `load bearing` unprompted, which is confirmation the existing ban is aimed at the right word.
 
+A later crop, harvested from the *comments* on one of those same threads. The jokes still read as the voice, which is the evidence they have to die in shipped prose as well as in assistant chat: `the good news is` (it never is), `belt and suspenders`, `you're absolutely right` (with or without "to call this out"), `before weighing in`, `let me ground this against`, `that distinction is crucial`, `zooming out for a second`, `subtle but non-trivial`, `rich tapestry`, `no happy path`, `sane defaults`, `footgun` as filler, `a genuinely hard problem, actually`, `important caveat` as a heading, `quite humbling`, `would you like me to elaborate`, `happy to iterate` / `iterate on this together`, `just say the word`, `I want to sit with this for a moment`, `I don't feel like I'm drifting` / `I feel oriented`, `recollection than recall`, `intellectual vertigo`, `I won't paper this over`, `this idea has teeth`, `core tension`, `owner decision needed`, `first, I need to be honest`, `the smoking gun`, `great instinct`, `your frustration is justified`, `good catch`, `yes, but —`.
+
 Do not treat this as a blacklist to route around. Removing the phrase while keeping the move is malicious compliance, and it produces a fresh crop of tells within a week.
 
 ## The rules
@@ -234,9 +236,15 @@ The original regex matched only `not X, it's Y` and passed three real violations
 \b(a|an|the) [\w' ]{2,25}, not (a|an|the) [\w' ]{2,25}
 and not (only|just|merely)
 isn'?t [^.]*— it'?s
+(\bnot |n't )[^.]{2,60}— 
+, not [\w' ]{2,30}[.,;]
 ```
 
-> **Never accept a writer's clean self-report.** Across four article-writing subagents explicitly instructed to avoid this tic and to self-grep before returning, three reported "grep: clean" while their drafts still had hits. The em-dash form is the one they consistently miss, because they grep `not just` / `not only` and stop. The reviewer runs an independent grep covering all four patterns before anything ships.
+Patterns 5 and 6 came later, after the first four printed "none" on a file carrying two live hits: a dash pivot with no "it's" ("do not carry a category premium — margin, age, and owned audience do") and a bare comma pivot ("a site you bought, not one you built"). Both flag candidates, and a human adjudicates by reading. "Tuesday, not Wednesday" is a plain correction and stays; the tell is the mirrored rhetorical frame.
+
+Pattern 5 needs the exact shape above. An earlier form of it — two bounded character runs plus a verb alternation — exceeded ugrep's complexity limit and returned 0 under BSD grep, so the QC step errored out while reading as clean. The current form scores identically under ugrep, BSD grep, and ripgrep, known-positive tested on all three. Test any rewritten pattern against every grep implementation your pipeline might reach for. A regex one engine refuses is a check that silently stops running.
+
+> **Never accept a writer's clean self-report.** Across four article-writing subagents explicitly instructed to avoid this tic and to self-grep before returning, three reported "grep: clean" while their drafts still had hits. The em-dash form is the one they consistently miss, because they grep `not just` / `not only` and stop. The reviewer runs an independent grep covering the full six-pattern set before anything ships.
 
 ## Pre-ship checklist
 
@@ -253,7 +261,7 @@ Run 1, 5, 6, 7, 8, 9, 11, 12 mechanically. Run 2, 3, 4, 10 by reading.
 9. At least one list broken out of the three-item pattern?
 10. Every hedge deleted or converted to a named specific unknown?
 11. Ends narrow, with no "ultimately / complex / ongoing reflection" closer?
-12. Sentence length varies; zero negative parallelism (all four patterns); zero hard-exclusion-list content?
+12. Sentence length varies; zero negative parallelism (the full six-pattern set, dash and comma pivots included); zero hard-exclusion-list content?
 
 An earlier version of item 12 demanded zero em dashes in coursework. That ban is retired. The mark is legitimate punctuation and banning it relocates the pressure to semicolons and comma splices. Control sentence length instead and the em dash stops appearing on its own.
 
@@ -267,6 +275,7 @@ An earlier version of item 12 demanded zero em dashes in coursework. That ban is
 - The systemic-driver thesis, "be airy," and the scoring-dial method — a practitioner report in the same community. Not a study.
 - The four-beat pedantry template and phrase tells — r/ClaudeAI, 2026-07, community threads; the answer-first / one-caveat-list fix originated there too.
 - The work-preamble tells and the validation ladder — two r/ClaudeCode threads, 2026-08. One supplied the fabricated rule citation and the false-durability line; another supplied the cathedral-column parody, the sharpest single description of the ceremony problem anyone has written down. Parody, not measurement — but the phrases are verbatim quotes of real output, which is the evidence that matters here.
+- The later phrase crop — the comment section under one of those same threads, 2026-08. Same standard applied: a joke that still sounds like the model is a tell.
 
 ## Adapting this skill
 
