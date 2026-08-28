@@ -32,14 +32,14 @@ python3 <your-extractor>.py "$SD/session-raw.jsonl" "$SD/session-audit-digest.md
 chmod 600 "$SD/session-raw.jsonl" "$SD/session-audit-digest.md"   # transcript copies, never world-readable
 ```
 
-The extractor is not shipped here — write your own against whatever your agent's transcript format is. Its contract is short: read the raw session log, emit every user turn and every tool call with its result in order, drop image and base64 payloads, truncate very long blocks with a marker, and make no judgments. Offer a `--full` switch so the auditor can ask for an untruncated re-run. A model anywhere in this step defeats the purpose.
+The extractor is not shipped here — write your own against whatever your agent's transcript format is. Its contract is short: read the raw session log, emit every user turn and every tool call with its result in order, drop image and base64 payloads, truncate very long blocks with a marker, and make no judgments. Offer a `--full` switch so the auditor can ask for an untruncated re-run. A model anywhere in this step defeats the purpose. A different CLI's chat-history format is fine as a source — but assert that the file's parent directory matches the session id you believe you are auditing before you build the digest from it.
 
 **Derive the transcript path from your own scratchpad path. Never select it by newest mtime.** Under concurrency that is a coin flip: on one verified run, the newest-mtime transcript at audit time belonged to a *different* concurrent session, **9 seconds newer**. A compliant auditor following a "find the most recently modified transcript" instruction audits the wrong session and returns entirely plausible findings about it. Five transcripts were touched inside three minutes on that machine.
 
 **Hard gate — the dispatch prompt may not be composed until all three hold:**
 
 1. `test -s "$SD/session-audit-digest.md" && echo DIGEST-OK` printed `DIGEST-OK`. Run it and see the receipt **before writing one word of the dispatch prompt**.
-2. The dispatch prompt carries the digest's **literal absolute path**, pasted from that receipt — never a description of how to find one.
+2. The dispatch prompt carries the digest's **literal absolute path**, pasted from that receipt — never a description of how to find one. If the dispatch states a dialogue-block count, it is the number your count command printed against the digest after `DIGEST-OK`, quoted verbatim — never an estimate (one audited run claimed 721 blocks; the digest held 61).
 3. The dispatch prompt contains **no transcript-selection procedure at all.** "Most recently modified", "newest", "latest", and any mtime or glob hunt are banned dispatch text.
 
 The ordering carries a real dependency. A dispatch composed before the digest exists has nothing to point at, so it degenerates into exactly the two banned inputs: a self-authored summary of the session plus a find-it-yourself transcript hunt. That is what happened the first time — a seven-item "what this session did" self-characterization, launched ahead of the digest. It was caught in review that time. This gate exists so the next one doesn't depend on being caught.
