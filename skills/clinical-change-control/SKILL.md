@@ -135,7 +135,7 @@ Settled design decisions. Do not relitigate without new evidence; do not "improv
 
 3. **The process-isolation wall is real.** The EHR's document PDF viewer opens in a separate browser process; every external DevTools-protocol driver loses control at that instant ("Cannot attach to this target"). **Page-resident code does not hit this wall** — a hand-pasted DevTools console probe captured a real PDF while every automated external driver failed. Do not spend another session trying to attach an external driver to the viewer.
 
-4. **The shipped resolution: a small browser extension** — MV3, `world:"MAIN"` `document_start` content script wrapping the page's own fetch/XHR (passive, primary), writing each captured PDF straight to the mounted Drive via the File System Access API. Semi-manual by design: the clinician opens each document, it auto-saves — no pasting, no tokens, no LLM at runtime.
+4. **The resolution that shipped was a small browser extension** — MV3, `world:"MAIN"` `document_start` content script wrapping the page's own fetch/XHR (passive, primary), writing each captured PDF straight to the mounted Drive via the File System Access API. Semi-manual by design: the clinician opens each document, it auto-saves — no pasting, no tokens, no LLM at runtime. **Retired 2026-10-07 in the originating setup**, which moved document retrieval to direct workflows in the source system; the design stays recorded here because the constraints that produced it (points 2 and 3) still hold.
 
 5. **Capture → Drive → then the scribe, in that order.** Intake writes everything to the Drive *before* assembling the scribe session, so a scribe failure never costs the captured chart.
 
