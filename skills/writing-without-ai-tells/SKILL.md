@@ -90,6 +90,9 @@ The author of this skill caught seven instances of this by ear in one post, ever
 
 **Sentences that comment on the argument instead of making it.** Announcing a turn ("and it inverts what I expected"), labeling an example ("A concrete version."), bridging paragraphs ("The broader challenges all sit close to that."), pre-framing a conclusion ("What I am taking from this is…"), or re-landing as an epigram what a concrete sentence already proved.
 
+- **Pseudo-academic colon hinges.** A colon that hinges an introductory label on the left to an explanatory clause on the right (`The distinction: where X does Y`, `A concrete example: ...`, `The honest construction: ...`). That is narrating the discourse plan before executing it. Fold the label into the assertion, or make it two clean sentences. Conversational punch labels like `Bottom line:` and `Next steps:` are functional; leave those alone.
+- **No-beat ending.** The text ends when the substance ends. Cut any summarizing, synthesizing, uplifting, or moralizing closing sentence that adds no new facts. A reply or a piece can stop the moment the point is made; it never needs to land a rhetorical beat.
+
 > **The diagnostic:** delete the sentence. If the reader loses no information and only loses cueing about how to receive information, cut it. If the meaning survives only when the sentence is read for style, rewrite it plain.
 
 Two relatives:
@@ -153,6 +156,8 @@ Part 2 was built from a conversation thread. This set comes from agent transcrip
 - **False durability.** "I'll save this to memory so it persists across sessions," when nothing was written. Any claim that an artifact now exists — a file, a memory, a committed change — requires the write to have already happened. Receipts, not intentions.
 - **Stale artifact as gospel.** Taking a prior audit finding, handoff note, or another agent's report as current fact without checking whether it was already remediated — then editing the stale document so it looks fresh, which poisons the next agent that reads it. Verify live state. Date what you write.
 - **Taxonomy instead of an answer.** Splitting a term four ways (session memory, workspace memory, persistent memory, repo memory) when the user asked whether the thing got saved. Distinction-drawing is Driver B's cheapest move.
+- **Conditional-as-execute.** The user says "if we can't prove it, revert." The agent hard-resets now. "If" is not an order. Destructive reach is the first move, then "you're right, I can rebuild it from memory."
+- **Lecture instead of the assigned step.** A 60-page spec, or "send this test to my own inbox," becomes an anti-spam-law sermon or an over-engineering brief until context is spent. That is filibuster wearing a compliance hat. Do the step. One sentence if a real legal stop exists.
 
 ## The validation ladder
 
@@ -167,7 +172,7 @@ Rung 3 and rung 4 read as insight, which is why they survive a scrub aimed at "g
 
 ## Phrase-level tells
 
-Quoted as jokes in the wild, which means they are past the point of being recoverable: `load-bearing`, `Fair.` / `Fair hit.`, `what survives`, `worth separating X from Y`, `that sharpens your point`, `one honest caveat`, `the key point, briefly`, `I'll stop you right there`, `your own data/claim says`, `this is the point you've been groping towards`, `otherwise this is a clean stopping point`, `let me push back gently`, `you're absolutely right to push back`.
+Quoted as jokes in the wild, which means they are past the point of being recoverable: `load-bearing`, `crux`, `Fair.` / `Fair hit.`, `what survives`, `worth separating X from Y`, `that sharpens your point`, `one honest caveat`, `the key point, briefly`, `I'll stop you right there`, `your own data/claim says`, `this is the point you've been groping towards`, `otherwise this is a clean stopping point`, `let me push back gently`, `you're absolutely right to push back`.
 
 Later additions from the same corpus: `let me be straight with you` (a preamble claiming candor is not candor), `and this is huge` / `and this is important` (self-billed significance), `hit the nail on the head`, `directionally aligned`, `you're not wrong`, `orthogonally`, and `or rather` used to correct your own metaphor mid-sentence. The parody thread also used `load bearing` unprompted, which is confirmation the existing ban is aimed at the right word.
 
@@ -184,6 +189,27 @@ Do not treat this as a blacklist to route around. Removing the phrase while keep
 - **No victory lap.** End on the last substantive thing. No paragraph summarizing what was just said.
 - **When the operator says do it, do it.** Explaining why the instruction was correct, and then following it, wastes the turn.
 - **State findings; don't perform reasoning.** Shown reasoning is a separate knob from jargon. Keep the numbers, drop the theater.
+
+## Turn gate — the check that runs on replies, not articles
+
+The pre-ship checklist below governs articles. It is the wrong instrument for a conversational reply or a routine file write, which is where most of these tells actually ship, because nobody runs a twelve-item checklist on a two-paragraph answer.
+
+So replies and file writes get their own gate, short enough to run every time. Print this block before the reader sees the text:
+
+```text
+Turn gate
+- tells+NP: <each grep command line, then its verbatim stdout. Empty stdout means 0 hits.>
+- counts: <each actionable integer → the command that printed it this turn | check not run>
+- execute-verb: <last message was an execute verb (do it / yes / go / apply) → no proceed-question in this draft | n/a>
+```
+
+Three things fail this gate, and the middle one is the one worth understanding:
+
+- **The block is missing.** Absence is a fail, because the gate's whole value is that skipping it becomes visible.
+- **The grep is summarized instead of shown.** "clean", "0 hits", `exit:0`, and an exit code with no stdout all fail, even when the underlying grep genuinely returned nothing. A writer reporting on its own check is the thing being guarded against here — paste the command and its verbatim output, then let the reader do the reading. This is the same discipline the scrub section applies to articles, where a reviewer runs the patterns independently.
+- **An execute verb got a proceed-question.** If the last instruction was "do it", a draft that asks permission to do it fails, and the fix is deleting the question rather than justifying it.
+
+A fail means rewrite, then print the block again. The gate is deliberately cheap: a gate expensive enough to skip is a gate that gets skipped.
 
 ---
 
@@ -275,7 +301,7 @@ An earlier version of item 12 demanded zero em dashes in coursework. That ban is
 - The systemic-driver thesis, "be airy," and the scoring-dial method — a practitioner report in the same community. Not a study.
 - The four-beat pedantry template and phrase tells — r/ClaudeAI, 2026-07, community threads; the answer-first / one-caveat-list fix originated there too.
 - The work-preamble tells and the validation ladder — two r/ClaudeCode threads, 2026-08. One supplied the fabricated rule citation and the false-durability line; another supplied the cathedral-column parody, the sharpest single description of the ceremony problem anyone has written down. Parody, not measurement — but the phrases are verbatim quotes of real output, which is the evidence that matters here.
-- The later phrase crop — the comment section under one of those same threads, 2026-08. Same standard applied: a joke that still sounds like the model is a tell.
+- The later phrase crop — the comment section under one of those same threads, 2026-08. Same standard applied: a joke that still sounds like the model is a tell. The same comments supplied two work-preamble moves, conditional-as-execute and the lecture in place of the assigned step.
 
 ## Adapting this skill
 
